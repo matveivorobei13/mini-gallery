@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="style.css">
+    <title>ЗЩІЕ</title>
+   
+    
+</head>
+<body>
+   <div class="post_div">
+        <h1>ЗАГОЛОВОК</h1>
+        <img src="">
+        <p>описание</p>
+        <button id="main_page">На главную</button>
+   </div>
+   <script>
+        
+        const params = new URLSearchParams(window.location.search)
+        const id = parseInt(params.get('id'))
+        const main_page = document.querySelector("#main_page")
+        async function get_post(){
+            
+            
+            const response = await fetch(`http://localhost:3000/get_post/${id}`)
+            const post_info = await response.json()
+            if(post_info.status === "ok"){
+                document.querySelector('.post_div h1').innerHTML = post_info.post.title
+            document.querySelector('.post_div img').src = `/uploads/${post_info.post.path}`
+            document.querySelector('.post_div p').innerHTML = post_info.post.description
+            }
+            else{
+                alert(post_info.message)
+            }
+            
+        }
+        get_post()
+        main_page.addEventListener("click", function(){
+            window.location.href = "index.html"
+        })
+   </script>
+</body>
+</html>

@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="style.css">
+    <title>Mini Gallery</title>
+   
+    
+</head>
+<body>
+    <header>
+        <div class="search_div">
+            <input type="text" id="search_input">
+            <button id="search"><img src="img/search.png"></button>
+        </div>
+        <button id="create_post"><img src="img/plus.png"></button>
+    </header>
+    <main>
+      
+    </main>
+    <script>
+        const main = document.querySelector('main')
+        const input = document.querySelector('#search_input')
+        const search = document.querySelector('#search')
+        const create_post = document.querySelector("#create_post")
+        const params = new URLSearchParams(window.location.search)
+        const search_param = params.get('search')
+        console.log(search_param)
+        async function get_posts(){
+            const response = await fetch("http://localhost:3000/get_posts")
+            const posts = await response.json()
+            posts.posts.forEach(post => {
+                
+                const card = document.createElement("div");
+
+                card.className = "post_card";
+
+                card.innerHTML = `
+                    <h1>${post.title}</h1>
+                    <img src="/uploads/${post.path}">
+                    <p>${post.description}</p>
+                    <button>Больше</button>
+                `;
+
+                const btn = card.querySelector("button");
+
+                btn.addEventListener("click", () => {
+                    window.location.href = `post.html?id=${post.id}`
+                 
+                });
+
+                main.appendChild(card);
+                        });
+        }
+        async function search_posts(){
+            const response = await fetch(`http://localhost:3000/search_posts?search=${search_param}`)
+            const posts = await response.json()
+            if(posts.status === "ok"){
+                 posts.posts.forEach(post => {
+                
+                const card = document.createElement("div");
+
+                card.className = "post_card";
+
+                card.innerHTML = `
+                    <h1>${post.title}</h1>
+                    <img src="/uploads/${post.path}">
+                    <p>${post.description}</p>
+                    <button>Больше</button>
+                `;
+
+                const btn = card.querySelector("button");
+
+                btn.addEventListener("click", () => {
+                    window.location.href = `post.html?id=${post.id}`
+                 
+                });
+
+                main.appendChild(card);
+
+                        });
+            }
+            else{
+                alert(posts.message)
+            }
+           
+        }
+        if(!search_param){
+            get_posts()
+        }
+        else{
+            search_posts()
+        }
+        create_post.addEventListener("click", function(){
+            window.location.href = "upload.html"
+        })
+        search.addEventListener("click", function(){
+            window.location.href = `index.html?search=${input.value.trim()}`
+        })
+    </script>
+</body>
+</html>
